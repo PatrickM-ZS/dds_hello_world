@@ -1,0 +1,4 @@
+[submodule "cyclonedds"]
+	path = cyclonedds
+	url = git@github.com:PatrickM-ZS/cyclonedds.git
+	branch = zephyr-support
