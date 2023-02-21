@@ -3,9 +3,37 @@
 #include <stdio.h>
 #include <stdlib.h>
 #include <dds/dds.h>
+#include <dds/ddsi/ddsi_config.h>
 #include "HelloWorldData.h"
 
-#define MAX_SAMPLES 1
+void init_config(struct ddsi_config *cfg)
+{
+  ddsi_config_init_default (cfg);
+  cfg->rbuf_size = 40 * 1024;
+  cfg->rmsg_chunk_size = 20 * 1024;
+  cfg->tracemask = DDS_LC_ALL | DDS_LC_PLIST;
+  cfg->tracefile = "stderr";
+  cfg->tracefp = NULL;
+  
+#if defined(CONFIG_NET_CONFIG_PEER_IPV6_ADDR)
+  if (strlen(CONFIG_NET_CONFIG_PEER_IPV6_ADDR) > 0) {
+    struct ddsi_config_peer_listelem *peer = malloc(sizeof *peer);
+    peer->next = NULL;
+    peer->peer = CONFIG_NET_CONFIG_PEER_IPV6_ADDR;
+    cfg->peers = peer;
+  }
+#elif defined(CONFIG_NET_CONFIG_PEER_IPV4_ADDR)
+  if (strlen(CONFIG_NET_CONFIG_PEER_IPV4_ADDR) > 0)) {
+    struct ddsi_config_peer_listelem *peer = malloc(sizeof *peer);
+    peer->next = NULL;
+    peer->peer = CONFIG_NET_CONFIG_PEER_IPV4_ADDR;
+    cfg->peers = peer;
+  }
+#endif
+  //dds_set_log_file(NULL);
+  //dds_set_trace_file(NULL);
+  //dds_set_log_mask(DDS_LC_ALL);
+}
 
 void helloworld_publisher()
 {
@@ -15,9 +43,13 @@ void helloworld_publisher()
   dds_return_t rc;
   HelloWorldData_Msg msg;
   uint32_t status = 0;
+  struct ddsi_config config;
+
+  init_config(&config);
+  dds_entity_t domain = dds_create_domain_with_rawconfig (1, &config);
 
   /* Create a Participant. */
-  participant = dds_create_participant (DDS_DOMAIN_DEFAULT, NULL, NULL);
+  participant = dds_create_participant (1, NULL, NULL);
   if (participant < 0)
     DDS_FATAL("dds_create_participant: %s\n", dds_strretcode(-participant));
 
@@ -65,7 +97,13 @@ void helloworld_publisher()
   rc = dds_delete (participant);
   if (rc != DDS_RETCODE_OK)
     DDS_FATAL("dds_delete: %s\n", dds_strretcode(-rc));
+
+  rc = dds_delete (domain);
+  if (rc != DDS_RETCODE_OK)
+    DDS_FATAL("dds_delete (domain): %s\n", dds_strretcode(-rc));
 }
+
+#define MAX_SAMPLES 1
 
 void helloworld_subscriber()
 {
@@ -77,9 +115,17 @@ void helloworld_subscriber()
   dds_sample_info_t infos[MAX_SAMPLES];
   dds_return_t rc;
   dds_qos_t *qos;
+  struct ddsi_config config;
+
+  dds_set_log_mask(DDS_LC_ALL);
+
+  init_config(&config);
+  dds_entity_t domain = dds_create_domain_with_rawconfig (1, &config);
+  if (domain < 0)
+      DDS_FATAL("dds_create_domain_with_rawconfig: %s\n", dds_strretcode(-domain));
 
   /* Create a Participant. */
-  participant = dds_create_participant (DDS_DOMAIN_DEFAULT, NULL, NULL);
+  participant = dds_create_participant (1, NULL, NULL);
   if (participant < 0)
     DDS_FATAL("dds_create_participant: %s\n", dds_strretcode(-participant));
 
@@ -92,6 +138,10 @@ void helloworld_subscriber()
   /* Create a reliable Reader. */
   qos = dds_create_qos ();
   dds_qset_reliability (qos, DDS_RELIABILITY_RELIABLE, DDS_SECS (10));
+
+  //printf("sleep main\n");
+  //dds_sleepfor (DDS_MSECS (500));
+
   reader = dds_create_reader (participant, topic, qos, NULL);
   if (reader < 0)
     DDS_FATAL("dds_create_reader: %s\n", dds_strretcode(-reader));
@@ -136,12 +186,18 @@ void helloworld_subscriber()
   /* Deleting the participant will delete all its children recursively as well. */
   rc = dds_delete (participant);
   if (rc != DDS_RETCODE_OK)
-    DDS_FATAL("dds_delete: %s\n", dds_strretcode(-rc));
+    DDS_FATAL("dds_delete (participant): %s\n", dds_strretcode(-rc));
+
+  rc = dds_delete (domain);
+  if (rc != DDS_RETCODE_OK)
+    DDS_FATAL("dds_delete (domain): %s\n", dds_strretcode(-rc));
 }
 
 void main(void)
 {
     printk("CycloneDDS Hello World! %s\n", CONFIG_BOARD);
     printf("printf: CycloneDDS Hello World! %s\n", CONFIG_BOARD);
-    helloworld_publisher();
+    //helloworld_publisher();
+    helloworld_subscriber();
+    return;
 }
