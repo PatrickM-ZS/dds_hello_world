@@ -14,6 +14,14 @@ void init_config(struct ddsi_config *cfg)
   cfg->tracemask = DDS_LC_ALL | DDS_LC_PLIST;
   cfg->tracefile = "stderr";
   cfg->tracefp = NULL;
+  cfg->multiple_recv_threads = DDSI_BOOLDEF_FALSE;
+
+  struct ddsi_config_network_interface_listelem *ifcfg = malloc(sizeof *ifcfg);
+  memset(ifcfg, 0, sizeof *ifcfg);
+  ifcfg->next = NULL;
+  ifcfg->cfg.prefer_multicast = true;
+  ifcfg->cfg.name = "eth0"; /* ethernet@74b00000 */
+  //cfg->network_interfaces = ifcfg;
   
 #if defined(CONFIG_NET_CONFIG_PEER_IPV6_ADDR)
   if (strlen(CONFIG_NET_CONFIG_PEER_IPV6_ADDR) > 0) {
@@ -195,9 +203,8 @@ void helloworld_subscriber()
 
 void main(void)
 {
-    printk("CycloneDDS Hello World! %s\n", CONFIG_BOARD);
-    printf("printf: CycloneDDS Hello World! %s\n", CONFIG_BOARD);
-    //helloworld_publisher();
-    helloworld_subscriber();
+    printf("CycloneDDS Hello World! %s\n", CONFIG_BOARD);
+    helloworld_publisher();
+    //helloworld_subscriber();
     return;
 }
