@@ -62,8 +62,10 @@ target_link_libraries(app PUBLIC cdds_lib)
 target_sources(app
   PRIVATE
   src/main.c
+  #src/ipv6test.c
   src/HelloWorldData.c
   src/HelloWorldData.h
+  #src/socketdebug.c
   #src/threads.c
-    #src/gdbstub.c
+   #src/gdbstub.c
 )

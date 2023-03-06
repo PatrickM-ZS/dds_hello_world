@@ -11,17 +11,26 @@ void init_config(struct ddsi_config *cfg)
   ddsi_config_init_default (cfg);
   cfg->rbuf_size = 40 * 1024;
   cfg->rmsg_chunk_size = 20 * 1024;
-  cfg->tracemask = DDS_LC_ALL | DDS_LC_PLIST;
+  //cfg->tracemask = DDS_LC_ALL;
+  cfg->tracemask = DDS_LC_INFO | DDS_LC_CONFIG;
   cfg->tracefile = "stderr";
   cfg->tracefp = NULL;
   cfg->multiple_recv_threads = DDSI_BOOLDEF_FALSE;
+  //cfg->max_msg_size = 1452;
+  cfg->retransmit_merging = DDSI_REXMIT_MERGE_ALWAYS;
+  //cfg->transport_selector = DDSI_TRANS_UDP6;
+  //cfg->defaultMulticastAddressString = "239.255.0.2";
 
   struct ddsi_config_network_interface_listelem *ifcfg = malloc(sizeof *ifcfg);
   memset(ifcfg, 0, sizeof *ifcfg);
   ifcfg->next = NULL;
   ifcfg->cfg.prefer_multicast = true;
-  ifcfg->cfg.name = "eth0"; /* ethernet@74b00000 */
-  //cfg->network_interfaces = ifcfg;
+#if defined(CONFIG_BOARD_QEMU_X86)
+  ifcfg->cfg.name = "eth0";
+#elif defined(CONFIG_BOARD_S32Z270DC2_RTU0_R52)
+  ifcfg->cfg.name = "ethernet@74b00000";
+#endif
+  cfg->network_interfaces = ifcfg;
   
 #if defined(CONFIG_NET_CONFIG_PEER_IPV6_ADDR)
   if (strlen(CONFIG_NET_CONFIG_PEER_IPV6_ADDR) > 0) {
@@ -38,9 +47,6 @@ void init_config(struct ddsi_config *cfg)
     cfg->peers = peer;
   }
 #endif
-  //dds_set_log_file(NULL);
-  //dds_set_trace_file(NULL);
-  //dds_set_log_mask(DDS_LC_ALL);
 }
 
 void helloworld_publisher()
@@ -109,6 +115,10 @@ void helloworld_publisher()
   rc = dds_delete (domain);
   if (rc != DDS_RETCODE_OK)
     DDS_FATAL("dds_delete (domain): %s\n", dds_strretcode(-rc));
+
+  //printf ("Wait for network tx\n");
+  //fflush(stdout);
+  //dds_sleepfor(DDS_SECS(2));
 }
 
 #define MAX_SAMPLES 1
@@ -204,7 +214,8 @@ void helloworld_subscriber()
 void main(void)
 {
     printf("CycloneDDS Hello World! %s\n", CONFIG_BOARD);
-    helloworld_publisher();
-    //helloworld_subscriber();
+    //helloworld_publisher();
+    helloworld_subscriber();
+    printf("Done\n");
     return;
 }
