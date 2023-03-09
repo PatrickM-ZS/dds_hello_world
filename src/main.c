@@ -115,10 +115,6 @@ void helloworld_publisher()
   rc = dds_delete (domain);
   if (rc != DDS_RETCODE_OK)
     DDS_FATAL("dds_delete (domain): %s\n", dds_strretcode(-rc));
-
-  //printf ("Wait for network tx\n");
-  //fflush(stdout);
-  //dds_sleepfor(DDS_SECS(2));
 }
 
 #define MAX_SAMPLES 1
@@ -134,8 +130,6 @@ void helloworld_subscriber()
   dds_return_t rc;
   dds_qos_t *qos;
   struct ddsi_config config;
-
-  dds_set_log_mask(DDS_LC_ALL);
 
   init_config(&config);
   dds_entity_t domain = dds_create_domain_with_rawconfig (1, &config);
@@ -156,9 +150,6 @@ void helloworld_subscriber()
   /* Create a reliable Reader. */
   qos = dds_create_qos ();
   dds_qset_reliability (qos, DDS_RELIABILITY_RELIABLE, DDS_SECS (10));
-
-  //printf("sleep main\n");
-  //dds_sleepfor (DDS_MSECS (500));
 
   reader = dds_create_reader (participant, topic, qos, NULL);
   if (reader < 0)
@@ -214,8 +205,11 @@ void helloworld_subscriber()
 void main(void)
 {
     printf("CycloneDDS Hello World! %s\n", CONFIG_BOARD);
-    //helloworld_publisher();
+#if BUILD_HELLOWORLD_PUB
+    helloworld_publisher();
+#else
     helloworld_subscriber();
+#endif
     printf("Done\n");
     return;
 }
