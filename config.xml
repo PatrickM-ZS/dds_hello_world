@@ -2,7 +2,7 @@
   <Domain>
     <General>
       <!-- Transport>udp6</Transport -->
-      <MaxMessageSize>1450B</MaxMessageSize>
+      <MaxMessageSize>1400B</MaxMessageSize>
     </General>
     <Sizing>
       <ReceiveBufferSize>40KiB</ReceiveBufferSize>
