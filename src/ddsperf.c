@@ -476,8 +476,10 @@ static void hist_print (const char *prefix, struct hist *h, dds_time_t dt, int r
   uint64_t peak = 0, cnt = h->under + h->over;
   size_t p = 0;
 
+  assert(l);
   xsnprintf (l, l_size, &p, "%s", prefix);
 
+  assert(hist);
   hist[h->nbins] = 0;
   for (unsigned i = 0; i < h->nbins; i++)
   {
@@ -1586,6 +1588,7 @@ static bool print_stats (dds_time_t tref, dds_time_t tnow, dds_time_t tprev, str
   }
 
   int64_t *newraw = malloc (PINGPONG_RAWSIZE * sizeof (*newraw));
+  assert(newraw);
   if (submode != SM_NONE)
   {
     struct eseq_admin * const ea = &eseq_admin;

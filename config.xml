@@ -4,6 +4,33 @@
       <!-- Transport>udp6</Transport -->
       <MaxMessageSize>1400B</MaxMessageSize>
     </General>
+    <Threads>
+      <Thread name="recv">
+        <Scheduling>
+          <Priority>15</Priority>
+        </Scheduling>
+      </Thread>
+      <Thread name="tev">
+        <Scheduling>
+          <Priority>15</Priority>
+        </Scheduling>
+      </Thread>
+      <Thread name="gc">
+        <Scheduling>
+          <Priority>15</Priority>
+        </Scheduling>
+      </Thread>
+      <Thread name="dq.builtins">
+        <Scheduling>
+          <Priority>15</Priority>
+        </Scheduling>
+      </Thread>
+      <Thread name="dq.user">
+        <Scheduling>
+          <Priority>15</Priority>
+        </Scheduling>
+      </Thread>
+    </Threads>
     <Sizing>
       <ReceiveBufferSize>40KiB</ReceiveBufferSize>
       <ReceiveBufferChunkSize>20KiB</ReceiveBufferChunkSize>
@@ -13,7 +40,7 @@
     </Internal>
     <Tracing>
       <Verbosity>info</Verbosity>
-      <!-- Category>trace,plist</Category -->
+      <Category>config</Category>
       <OutputFile>stdout</OutputFile>
     </Tracing>
   </Domain>

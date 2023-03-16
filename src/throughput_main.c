@@ -19,10 +19,10 @@ void main(void)
     int ret;
     printf("CycloneDDS Throughput (%s)\n", CONFIG_BOARD);
 #if BUILD_THROUGHPUT_PUB
-    char *args[] = { "ThroughputPublisher" };
+    char *args[] = { "ThroughputPublisher", "8192", "0", "1", "30" };
     ret = throughput_pub(sizeof(args)/sizeof(args[0]), args);
 #else
-    char *args[] = { "ThroughputSubscriber" };
+    char *args[] = { "ThroughputSubscriber", "30" };
     ret = throughput_sub(sizeof(args)/sizeof(args[0]), args);
 #endif
     printf("Done (ret=%d)\n", ret);
