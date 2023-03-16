@@ -13,7 +13,7 @@ $ west build -b s32z270dc2_rtu0_r52 . -- -DBUILD_ROUNDTRIP_PING=1
 ```
 To build for qemu_x86, with ethernet support:
 ```
-$ west build -b x86_64 . -- -DOVERLAY_CONFIG=overlay-e1000.conf -DBUILD_ROUNDTRIP_PING=1
+$ west build -b qemu_x86 . -- -DOVERLAY_CONFIG=overlay-e1000.conf -DBUILD_ROUNDTRIP_PING=1
 ```
 Command-line parameters for the example can be modified in `src/rountrip_main.c`
 
