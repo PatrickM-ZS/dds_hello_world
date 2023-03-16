@@ -5,7 +5,7 @@ This repository contains some proof-of-concept applications that show how to bui
 
 ## Usage:
 This repository can be cloned and used like any generic Zephyr application. CycloneDDS is included as a git submodule.
-The `CMakeLists.txt` is currently setup to build CycloneDDS examples and ddsperf but can be easily modified or extended for other application code.
+The `CMakeLists.txt` is currently set up to build CycloneDDS examples and ddsperf but can be easily modified or extended for other application code.
 
 For example, to build Roundtrip Ping for the `s32z270dc2_rtu0_r52` target:
 ```
@@ -19,5 +19,5 @@ Command-line parameters for the example can be modified in `src/rountrip_main.c`
 
 The `copy_examples.sh` script can be used (manually) to update the code from CycloneDDS examples and run idlc to generate types.
 
-The CycloneDDS configuration in `config.xml` is automatically converted to a char array and available as env. var to support the default behaviour of retrieving config from CYCLONEDDS_URI.
+The CycloneDDS configuration in `config.xml` is automatically converted to a char array and available as environment variable to support the default behaviour of retrieving config from CYCLONEDDS_URI.
 Alternatively, [dds_create_domain_with_rawconfig](https://cyclonedds.io/docs/cyclonedds/latest/api/domain.html?#c.dds_create_domain_with_rawconfig) can be used without XML configuration data.
